@@ -18,6 +18,9 @@ public class ProvisionDatabase {
     }
 
     public static class Output {
+        @Action.Output(name = "Database", contentType = ContentType.String)
+        private String database;
+
         @Action.Output(name = "Username", contentType = ContentType.String)
         private String username;
 
@@ -27,9 +30,14 @@ public class ProvisionDatabase {
         public Output() {
         }
 
-        public Output(String username, String password) {
+        public Output(String database, String username, String password) {
+            this.database = database;
             this.username = username;
             this.password = password;
+        }
+
+        public String getDatabase() {
+            return database;
         }
 
         public String getUsername() {
