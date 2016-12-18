@@ -8,6 +8,7 @@ import java.security.SecureRandom;
 public class ApplicationModule extends AbstractModule {
     @Override
     protected void configure() {
+        bind(ApplicationConfiguration.class).asEagerSingleton();
         bind(SecureRandom.class).toProvider(SecureRandomProvider.class).asEagerSingleton();
     }
 }
