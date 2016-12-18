@@ -19,7 +19,7 @@ You will find the required schemas for the supported databases in the [`src/main
 
 The available configuration settings for the application are:
 
-* **DATABASE_HOSTNAME:**
+* **DATABASE_HOSTNAME**
 * **DATABASE_SUPERUSER_USERNAME**
 * **DATABASE_SUPERUSER_PASSWORD**
 
