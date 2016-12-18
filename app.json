@@ -1,0 +1,7 @@
+{
+  "name": "ManyWho Provisioning Service",
+  "description": "A service that is used to perform some tasks when a new tenant is provisioned in ManyWho",
+  "repository": "https://github.com/manywho/service-provisioning",
+  "logo": "https://s3.amazonaws.com/manywho-service-assets/icons/service-provisioning.png",
+  "keywords": ["manywho", "provisioning", "plugin", "workflow"]
+}
