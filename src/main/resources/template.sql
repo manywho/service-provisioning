@@ -8,7 +8,6 @@ CREATE TABLE "Group"
 (
   id uuid NOT NULL,
   name character varying NOT NULL,
-  tenant_id uuid NOT NULL,
   description character varying,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone,
@@ -24,7 +23,6 @@ CREATE TABLE "User"
   last_name character varying NOT NULL,
   email character varying NOT NULL,
   password character varying(65),
-  tenant_id uuid,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   updated_at timestamp with time zone NOT NULL,
   CONSTRAINT pk_user PRIMARY KEY (id),
