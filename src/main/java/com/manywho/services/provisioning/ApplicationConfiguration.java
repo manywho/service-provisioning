@@ -17,9 +17,9 @@ public class ApplicationConfiguration {
         return System.getenv("DATABASE_SUPERUSER_USERNAME");
     }
 
-    public String getAwsAccessKeyId() {return System.getenv("AWS_ACCESS_KEY_ID");}
+    public String getAwsSesManagerAccessKeyId() {return System.getenv("AWS_SES_MANAGER_ACCESS_KEY_ID");}
 
-    public String getAwsSecretAccessKey() {return System.getenv("AWS_SECRET_ACCESS_KEY");}
+    public String getAwsSesManagerSecretAccessKey() {return System.getenv("AWS_SES_MANAGER_SECRET_ACCESS_KEY");}
 
     public String getAwsSesHost() {return System.getenv("AWS_SES_HOST");}
 
@@ -27,5 +27,5 @@ public class ApplicationConfiguration {
 
     public int getAwsSesPort() {return Integer.parseInt(System.getenv("AWS_SES_PORT"));}
 
-    public String getAwsSesPolicy() {return System.getenv("AWS_SES_POLICY");}
+    public String getAwsSesTenantGroup() {return System.getenv("AWS_SES_TENANT_GROUP");}
 }

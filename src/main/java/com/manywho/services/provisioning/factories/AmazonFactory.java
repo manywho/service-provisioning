@@ -23,7 +23,7 @@ public class AmazonFactory {
 
     public BasicAWSCredentials createBasicAwsCredentials(){
         if (basicAWSCredentials == null) {
-            basicAWSCredentials = new BasicAWSCredentials(applicationConfiguration.getAwsAccessKeyId(), applicationConfiguration.getAwsSecretAccessKey());
+            basicAWSCredentials = new BasicAWSCredentials(applicationConfiguration.getAwsSesManagerAccessKeyId(), applicationConfiguration.getAwsSesManagerSecretAccessKey());
         }
 
         return basicAWSCredentials;

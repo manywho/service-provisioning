@@ -17,6 +17,7 @@ public class ProvisionEmailCommand implements ActionCommand<ServiceConfiguration
     @Inject
     public ProvisionEmailCommand(AmazonFactory amazonFactory, SesSmtpCredentialGenerator sesSmtpCredentialGenerator,
                                  ApplicationConfiguration applicationConfiguration) {
+
         this.amazonFactory = amazonFactory;
         this.sesSmtpCredentialGenerator = sesSmtpCredentialGenerator;
         this.applicationConfiguration = applicationConfiguration;
@@ -24,17 +25,17 @@ public class ProvisionEmailCommand implements ActionCommand<ServiceConfiguration
 
     @Override
     public ActionResponse<ProvisionEmail.Output> execute(ServiceConfiguration configuration, ServiceRequest request, ProvisionEmail.Input input) {
+        String userName = input.getTenant().toString();
 
         this.amazonFactory.getAmazonIdentityManagementClient()
-                .createUser(new CreateUserRequest(input.getTenant().toString()));
+                .createUser(new CreateUserRequest(userName));
 
-        AttachUserPolicyRequest policyRequest = new AttachUserPolicyRequest();
-        policyRequest.withUserName(input.getTenant().toString()).withPolicyArn(applicationConfiguration.getAwsSesPolicy());
+        AddUserToGroupRequest addUserToGroupRequest = new AddUserToGroupRequest(applicationConfiguration.getAwsSesTenantGroup(), userName);
 
-        this.amazonFactory.getAmazonIdentityManagementClient().attachUserPolicy(policyRequest);
+        this.amazonFactory.getAmazonIdentityManagementClient().addUserToGroup(addUserToGroupRequest);
 
         CreateAccessKeyResult createAccessKeyResult = this.amazonFactory.getAmazonIdentityManagementClient()
-                .createAccessKey(new CreateAccessKeyRequest(input.getTenant().toString()));
+                .createAccessKey(new CreateAccessKeyRequest(userName));
 
         String keyId = createAccessKeyResult.getAccessKey().getAccessKeyId();
         String password = sesSmtpCredentialGenerator.getSmtpPassword(createAccessKeyResult.getAccessKey().getSecretAccessKey());
