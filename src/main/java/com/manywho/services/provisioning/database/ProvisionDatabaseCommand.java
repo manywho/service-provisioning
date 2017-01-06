@@ -53,7 +53,7 @@ public class ProvisionDatabaseCommand implements ActionCommand<ServiceConfigurat
 
         try (Connection connection = sql2oFactory.create(databaseName).beginTransaction()) {
             // Reassign all the tables in the new database to the new user
-            List<String> alterStatements = connection.createQuery("SELECT 'ALTER TABLE '|| schemaname || '.' || tablename ||' OWNER TO " + username + ";' FROM pg_tables WHERE NOT schemaname IN ('pg_catalog', 'information_schema') ORDER BY schemaname, tablename")
+            List<String> alterStatements = connection.createQuery("SELECT 'ALTER TABLE '|| schemaname || '.\"' || tablename ||'\" OWNER TO " + username + ";' FROM pg_tables WHERE NOT schemaname IN ('pg_catalog', 'information_schema') ORDER BY schemaname, tablename")
                     .executeAndFetch(String.class);
 
             for (String alterStatement : alterStatements) {
