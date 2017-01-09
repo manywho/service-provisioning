@@ -12,7 +12,7 @@ CREATE TABLE "Group"
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone,
   CONSTRAINT pk_group PRIMARY KEY (id),
-  CONSTRAINT uq_group_name UNIQUE (name, tenant_id)
+  CONSTRAINT uq_group_name UNIQUE (name)
 );
 ALTER TABLE "Group" OWNER TO tenant;
 
@@ -26,7 +26,7 @@ CREATE TABLE "User"
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   updated_at timestamp with time zone NOT NULL,
   CONSTRAINT pk_user PRIMARY KEY (id),
-  CONSTRAINT uq_user_email UNIQUE (email, tenant_id)
+  CONSTRAINT uq_user_email UNIQUE (email)
 );
 ALTER TABLE "User" OWNER TO tenant;
 
