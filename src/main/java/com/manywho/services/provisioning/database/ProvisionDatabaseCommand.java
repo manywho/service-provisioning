@@ -46,6 +46,10 @@ public class ProvisionDatabaseCommand implements ActionCommand<ServiceConfigurat
             connection.createQuery("CREATE USER " + username + " PASSWORD '" + password + "'")
                     .executeUpdate();
 
+            // Add the current "superuser" as a member of the newly created role (this may only be needed for RDS)
+            connection.createQuery("GRANT " + username + " TO current_user")
+                    .executeUpdate();
+
             // Create a database for the tenant ID
             connection.createQuery("CREATE DATABASE \"" + databaseName + "\" OWNER " + username + " TEMPLATE template_tenant")
                     .executeUpdate();
