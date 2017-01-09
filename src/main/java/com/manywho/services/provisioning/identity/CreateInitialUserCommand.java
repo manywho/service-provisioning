@@ -30,13 +30,12 @@ public class CreateInitialUserCommand implements ActionCommand<ServiceConfigurat
         try (Connection connection = sql2o.open()) {
 
             // Insert a new user, hashing the given password
-            connection.createQuery("INSERT INTO \"User\" (id, first_name, last_name, email, password, tenant_id, created_at, updated_at) VALUES (:id, :firstName, :lastName, :email, :password, :tenantId, :createdAt, :updatedAt)")
+            connection.createQuery("INSERT INTO \"User\" (id, first_name, last_name, email, password, created_at, updated_at) VALUES (:id, :firstName, :lastName, :email, :password, :createdAt, :updatedAt)")
                     .addParameter("id", UUID.randomUUID())
                     .addParameter("firstName", input.getUserFirstName())
                     .addParameter("lastName", input.getUserLastName())
                     .addParameter("email", input.getUserEmail())
                     .addParameter("password", BCrypt.hashpw(input.getUserPassword(), BCrypt.gensalt()))
-                    .addParameter("tenantId", input.getTenant())
                     .addParameter("createdAt", OffsetDateTime.now())
                     .addParameter("updatedAt", OffsetDateTime.now())
                     .executeUpdate();
