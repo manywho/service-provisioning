@@ -4,8 +4,8 @@ import com.manywho.sdk.api.ContentType;
 import com.manywho.sdk.services.actions.Action;
 import java.util.UUID;
 
-@Action.Metadata(name = "Provision Email", summary = "Provisions an Email for a given tenant", uri = "provision-email")
-public class ProvisionEmail {
+@Action.Metadata(name = "Provision SMTP", summary = "Provisions an SMTP account for a given tenant", uri = "provision-email")
+public class ProvisionSmtp {
 
     public static class Input {
         @Action.Input(name = "Tenant ID", contentType = ContentType.String)
