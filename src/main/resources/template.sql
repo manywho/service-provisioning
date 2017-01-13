@@ -54,6 +54,8 @@ CREATE TABLE public."Account"
   CONSTRAINT "Account_pkey" PRIMARY KEY (id)
 );
 
+COMMENT ON COLUMN public."Account"."id" IS '{{ManyWhoName:ID}}';
+
 CREATE TABLE public."Contact"
 (
   id SERIAL,
@@ -67,6 +69,11 @@ CREATE TABLE public."Contact"
       REFERENCES public."Account" (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
+
+COMMENT ON COLUMN public."Contact"."id" IS '{{ManyWhoName:ID}}';
+COMMENT ON COLUMN public."Contact"."FirstName" IS '{{ManyWhoName:First Name}}';
+COMMENT ON COLUMN public."Contact"."LastName" IS '{{ManyWhoName:Last Name}}';
+COMMENT ON COLUMN public."Contact"."AccountId" IS '{{ManyWhoName:Account ID}}';
 
 CREATE TABLE public."Case"
 (
@@ -87,6 +94,12 @@ CREATE TABLE public."Case"
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
+COMMENT ON COLUMN public."Case"."id" IS '{{ManyWhoName:ID}}';
+COMMENT ON COLUMN public."Case"."AccountId" IS '{{ManyWhoName:Account ID}}';
+COMMENT ON COLUMN public."Case"."ContactId" IS '{{ManyWhoName:Contact ID}}';
+COMMENT ON COLUMN public."Case"."ClosedDate" IS '{{ManyWhoName:Closed Date}}';
+COMMENT ON COLUMN public."Case"."ContactEmail" IS '{{ManyWhoName:Contact Email}}';
+
 CREATE TABLE public."Opportunity"
 (
   id SERIAL,
@@ -101,6 +114,10 @@ CREATE TABLE public."Opportunity"
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
+COMMENT ON COLUMN public."Opportunity"."id" IS '{{ManyWhoName:ID}}';
+COMMENT ON COLUMN public."Opportunity"."AccountId" IS '{{ManyWhoName:Account ID}}';
+COMMENT ON COLUMN public."Opportunity"."CloseDate" IS '{{ManyWhoName:Close Date}}';
+
 CREATE TABLE public."Task"
 (
   id SERIAL,
@@ -114,3 +131,7 @@ CREATE TABLE public."Task"
       REFERENCES public."Contact" (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
+
+COMMENT ON COLUMN public."Task"."id" IS '{{ManyWhoName:ID}}';
+COMMENT ON COLUMN public."Task"."ContactId" IS '{{ManyWhoName:Contact ID}}';
+COMMENT ON COLUMN public."Task"."CloseDate" IS '{{ManyWhoName:Close Date}}';
