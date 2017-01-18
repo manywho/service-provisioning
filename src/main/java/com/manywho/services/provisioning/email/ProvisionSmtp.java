@@ -18,7 +18,9 @@ public class ProvisionSmtp {
             return tenant;
         }
 
-        public String getTenantEmail() {return tenantEmail;}
+        public String getTenantEmail() {
+            return tenantEmail;
+        }
     }
 
     public static class Output {

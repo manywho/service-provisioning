@@ -28,8 +28,7 @@ public class ProvisionSmtpCommand implements ActionCommand<ServiceConfiguration,
 
     @Override
     public ActionResponse<ProvisionSmtp.Output> execute(ServiceConfiguration configuration, ServiceRequest request, ProvisionSmtp.Input input) {
-        AmazonSimpleEmailService ses = new AmazonSimpleEmailServiceClient(awsFactory.createBasicCredentials());
-        verifyEmailAddress(ses, input.getTenantEmail());
+        verifyEmailAddress(input.getTenantEmail());
 
         // We want to create an IAM user that is scoped to tenants
         String iamUsername = "tenant-" + input.getTenant();
@@ -57,12 +56,14 @@ public class ProvisionSmtpCommand implements ActionCommand<ServiceConfiguration,
         ));
     }
 
-    private void verifyEmailAddress(AmazonSimpleEmailService ses, String address) {
+    private void verifyEmailAddress(String address) {
+        AmazonSimpleEmailService ses = new AmazonSimpleEmailServiceClient(awsFactory.createBasicCredentials());
         ListVerifiedEmailAddressesResult verifiedEmails = ses.listVerifiedEmailAddresses();
-        if (verifiedEmails.getVerifiedEmailAddresses().contains(address)) return;
+        if (verifiedEmails.getVerifiedEmailAddresses().contains(address)){
+            return;
+        }
 
         ses.verifyEmailAddress(new VerifyEmailAddressRequest().withEmailAddress(address));
-        System.out.println("Please check the email address " + address + " to verify it");
     }
 
     /**
