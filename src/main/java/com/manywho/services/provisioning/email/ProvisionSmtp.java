@@ -11,9 +11,14 @@ public class ProvisionSmtp {
         @Action.Input(name = "Tenant ID", contentType = ContentType.String)
         private UUID tenant;
 
+        @Action.Input(name = "Tenant Email", contentType = ContentType.String)
+        private String tenantEmail;
+
         public UUID getTenant() {
             return tenant;
         }
+
+        public String getTenantEmail() {return tenantEmail;}
     }
 
     public static class Output {

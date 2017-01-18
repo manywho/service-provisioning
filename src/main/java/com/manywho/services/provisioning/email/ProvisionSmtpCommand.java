@@ -1,16 +1,16 @@
 package com.manywho.services.provisioning.email;
 
-import com.amazonaws.services.identitymanagement.model.AccessKey;
-import com.amazonaws.services.identitymanagement.model.AddUserToGroupRequest;
-import com.amazonaws.services.identitymanagement.model.CreateAccessKeyRequest;
-import com.amazonaws.services.identitymanagement.model.CreateUserRequest;
+import com.amazonaws.services.identitymanagement.model.*;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient;
+import com.amazonaws.services.simpleemail.model.ListVerifiedEmailAddressesResult;
+import com.amazonaws.services.simpleemail.model.VerifyEmailAddressRequest;
 import com.manywho.sdk.api.run.elements.config.ServiceRequest;
 import com.manywho.sdk.services.actions.ActionCommand;
 import com.manywho.sdk.services.actions.ActionResponse;
 import com.manywho.services.provisioning.ApplicationConfiguration;
 import com.manywho.services.provisioning.ServiceConfiguration;
 import com.manywho.services.provisioning.factories.AwsFactory;
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
@@ -28,6 +28,9 @@ public class ProvisionSmtpCommand implements ActionCommand<ServiceConfiguration,
 
     @Override
     public ActionResponse<ProvisionSmtp.Output> execute(ServiceConfiguration configuration, ServiceRequest request, ProvisionSmtp.Input input) {
+        AmazonSimpleEmailService ses = new AmazonSimpleEmailServiceClient(awsFactory.createBasicCredentials());
+        verifyEmailAddress(ses, input.getTenantEmail());
+
         // We want to create an IAM user that is scoped to tenants
         String iamUsername = "tenant-" + input.getTenant();
 
@@ -52,6 +55,14 @@ public class ProvisionSmtpCommand implements ActionCommand<ServiceConfiguration,
                 username,
                 password
         ));
+    }
+
+    private void verifyEmailAddress(AmazonSimpleEmailService ses, String address) {
+        ListVerifiedEmailAddressesResult verifiedEmails = ses.listVerifiedEmailAddresses();
+        if (verifiedEmails.getVerifiedEmailAddresses().contains(address)) return;
+
+        ses.verifyEmailAddress(new VerifyEmailAddressRequest().withEmailAddress(address));
+        System.out.println("Please check the email address " + address + " to verify it");
     }
 
     /**
