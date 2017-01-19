@@ -34,7 +34,10 @@ public class ProvisionSmtpCommand implements ActionCommand<ServiceConfiguration,
         String iamUsername = "tenant-" + input.getTenant();
 
         // Create the IAM user with no privileges
-        awsFactory.getIamClient().createUser(new CreateUserRequest(iamUsername));
+        CreateUserResult createUserResult = awsFactory.getIamClient().createUser(new CreateUserRequest(iamUsername));
+
+        // Add policy to user
+        addPolicyEmailRestrictionToUser(createUserResult.getUser().getUserName(), input.getTenantEmail());
 
         // Add the IAM user to the desired SES group
         awsFactory.getIamClient().addUserToGroup(new AddUserToGroupRequest(applicationConfiguration.getAwsTenantGroup(), iamUsername));
@@ -54,6 +57,19 @@ public class ProvisionSmtpCommand implements ActionCommand<ServiceConfiguration,
                 username,
                 password
         ));
+    }
+
+    private void addPolicyEmailRestrictionToUser(String userName, String tenantEmail) {
+        CreatePolicyRequest createPolicyRequest = new CreatePolicyRequest();
+        createPolicyRequest.setPolicyName(userName);
+        createPolicyRequest.setPolicyDocument("{\"Version\": \"2012-10-17\", \"Statement\": [{\"Effect\": \"Allow\", \"Action\": [\"ses:SendEmail\", \"ses:SendRawEmail\"],\"Resource\":\"*\", \"Condition\": {\"StringEquals\": {\"ses:FromAddress\": \"" + tenantEmail + "\"}}}]}");
+        CreatePolicyResult createPolicyResult =  awsFactory.getIamClient().createPolicy(createPolicyRequest);
+
+        AttachUserPolicyRequest attachUserPolicyRequest = new AttachUserPolicyRequest();
+        attachUserPolicyRequest.setPolicyArn(createPolicyResult.getPolicy().getArn());
+        attachUserPolicyRequest.setUserName(userName);
+        awsFactory.getIamClient().attachUserPolicy(attachUserPolicyRequest);
+
     }
 
     private void verifyEmailAddress(String address) {
