@@ -16,6 +16,12 @@ CREATE TABLE "Group"
 );
 ALTER TABLE "Group" OWNER TO tenant;
 
+COMMENT ON COLUMN "Group"."id" IS '{{ManyWhoName:ID}}';
+COMMENT ON COLUMN "Group"."name" IS '{{ManyWhoName:Name}}';
+COMMENT ON COLUMN "Group"."description" IS '{{ManyWhoName:Description}}';
+COMMENT ON COLUMN "Group"."created_at" IS '{{ManyWhoName:Created At}}';
+COMMENT ON COLUMN "Group"."updated_at" IS '{{ManyWhoName:Updated At}}';
+
 CREATE TABLE "User"
 (
   id uuid NOT NULL,
@@ -30,6 +36,14 @@ CREATE TABLE "User"
 );
 ALTER TABLE "User" OWNER TO tenant;
 
+COMMENT ON COLUMN "User"."id" IS '{{ManyWhoName:ID}}';
+COMMENT ON COLUMN "User"."first_name" IS '{{ManyWhoName:First Name}}';
+COMMENT ON COLUMN "User"."last_name" IS '{{ManyWhoName:Last Name}}';
+COMMENT ON COLUMN "User"."email" IS '{{ManyWhoName:Email}}';
+COMMENT ON COLUMN "User"."password" IS '{{ManyWhoName:Password}}';
+COMMENT ON COLUMN "User"."created_at" IS '{{ManyWhoName:Created At}}';
+COMMENT ON COLUMN "User"."updated_at" IS '{{ManyWhoName:Updated At}}';
+
 CREATE TABLE "Membership"
 (
   user_id uuid NOT NULL,
@@ -43,6 +57,9 @@ CREATE TABLE "Membership"
   ON UPDATE NO ACTION ON DELETE CASCADE
 );
 ALTER TABLE "Membership" OWNER TO tenant;
+
+COMMENT ON COLUMN "Membership"."user_id" IS '{{ManyWhoName:User ID}}';
+COMMENT ON COLUMN "Membership"."group_id" IS '{{ManyWhoName:Group ID}}';
 
 -- Create the default tables to be pre-installed in each tenant --
 
