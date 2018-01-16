@@ -15,6 +15,7 @@ import com.manywho.services.provisioning.ApplicationConfiguration;
 import com.manywho.services.provisioning.ServiceConfiguration;
 import com.manywho.services.provisioning.factories.AwsFactory;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
@@ -36,7 +37,7 @@ public class ProvisionSmtpCommand implements ActionCommand<ServiceConfiguration,
         // remove whitespaces and * that have a special meaning in amazon and can be used as a reg exp
         String cleanEmail = input.getTenantEmail().replace("*", "").trim();
 
-        validateEmailAddress (cleanEmail);
+        validateEmailAddress(cleanEmail);
 
         // Create a new policyDocument with the policy template and the email address of the user
         String policyDocument = getPolicyString(cleanEmail);
@@ -76,28 +77,25 @@ public class ProvisionSmtpCommand implements ActionCommand<ServiceConfiguration,
     private void validateEmailAddress(String tenantEmail) {
         EmailValidator emailValidator = new EmailValidator();
 
-        if(! emailValidator.isValid(tenantEmail, null)) {
-            throw new RuntimeException("The email is not valid");
+        if (emailValidator.isValid(tenantEmail, null) == false) {
+            throw new RuntimeException("The provided email address is not valid");
         }
     }
 
     private void addPolicyEmailRestrictionToUser(String userName, String policyDocument) {
-        CreatePolicyRequest createPolicyRequest = new CreatePolicyRequest();
-        createPolicyRequest.setPolicyName(userName);
-        createPolicyRequest.setPolicyDocument(policyDocument);
-        CreatePolicyResult createPolicyResult =  awsFactory.getIamClient().createPolicy(createPolicyRequest);
+        PutUserPolicyRequest putUserPolicyRequest = new PutUserPolicyRequest();
+        putUserPolicyRequest.setPolicyDocument(policyDocument);
+        putUserPolicyRequest.setUserName(userName);
 
-        AttachUserPolicyRequest attachUserPolicyRequest = new AttachUserPolicyRequest();
-        attachUserPolicyRequest.setPolicyArn(createPolicyResult.getPolicy().getArn());
-        attachUserPolicyRequest.setUserName(userName);
-        awsFactory.getIamClient().attachUserPolicy(attachUserPolicyRequest);
-
+        awsFactory.getIamClient().putUserPolicy(putUserPolicyRequest);
     }
 
 
-    public String getPolicyString(String tenantEmail) {
+    private String getPolicyString(String tenantEmail) {
         ObjectMapper mapper = new ObjectMapper();
+
         String policyTemplate = "{\"Version\": \"2012-10-17\", \"Statement\": [{\"Effect\": \"Allow\", \"Action\": [\"ses:SendEmail\", \"ses:SendRawEmail\"],\"Resource\":\"*\", \"Condition\": {\"StringEquals\": {\"ses:FromAddress\": \"to-replace\"}}}]}";
+
         try {
             JsonNode root = mapper.readTree(policyTemplate);
             JsonNode fromRestriction = root.path("Statement").path(0).path("Condition").path("StringEquals");
@@ -105,14 +103,15 @@ public class ProvisionSmtpCommand implements ActionCommand<ServiceConfiguration,
 
             return root.toString();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to create the policy string", e);
         }
     }
 
     private void verifyEmailAddress(String address) {
         AmazonSimpleEmailService ses = new AmazonSimpleEmailServiceClient(awsFactory.createBasicCredentials());
+
         ListVerifiedEmailAddressesResult verifiedEmails = ses.listVerifiedEmailAddresses();
-        if (verifiedEmails.getVerifiedEmailAddresses().contains(address)){
+        if (verifiedEmails.getVerifiedEmailAddresses().contains(address)) {
             return;
         }
 
@@ -123,9 +122,9 @@ public class ProvisionSmtpCommand implements ActionCommand<ServiceConfiguration,
      * This method is needed to generate an SMTP password to be used with SES, from the given IAM secret key. Based on
      * example code from the SES documentation.
      *
-     * @see <a href="https://docs.aws.amazon.com/ses/latest/DeveloperGuide/smtp-credentials.html#smtp-credentials-convert">SES docmentation</a>
      * @param key the secret key to generate an SMTP password from
      * @return the SMTP password
+     * @see <a href="https://docs.aws.amazon.com/ses/latest/DeveloperGuide/smtp-credentials.html#smtp-credentials-convert">SES docmentation</a>
      */
     private String generateSmtpPassword(String key) {
         if (key == null) {
