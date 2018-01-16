@@ -85,6 +85,7 @@ public class ProvisionSmtpCommand implements ActionCommand<ServiceConfiguration,
     private void addPolicyEmailRestrictionToUser(String userName, String policyDocument) {
         PutUserPolicyRequest putUserPolicyRequest = new PutUserPolicyRequest();
         putUserPolicyRequest.setPolicyDocument(policyDocument);
+        putUserPolicyRequest.setPolicyName(userName);
         putUserPolicyRequest.setUserName(userName);
 
         awsFactory.getIamClient().putUserPolicy(putUserPolicyRequest);
